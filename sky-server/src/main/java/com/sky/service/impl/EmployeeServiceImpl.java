@@ -83,13 +83,13 @@ public class EmployeeServiceImpl implements EmployeeService {
         //通过密码的常量类中获取密码常量123456
         employee.setPassword(DigestUtils.md5DigestAsHex(PasswordConstant.DEFAULT_PASSWORD.getBytes()));
         //设置当前记录的创建时间和修改时间
-        employee.setCreateTime(LocalDateTime.now());
-        employee.setUpdateTime(LocalDateTime.now());
-        //设置当前记录创建人id和修改人id
-        //TODO 后期完善，目前先设置为10L
-        //从ThreadLocal线程当中提取出之前存进去的empid
-        employee.setCreateUser(BaseContext.getCurrentId());
-        employee.setUpdateUser(BaseContext.getCurrentId());
+//        employee.setCreateTime(LocalDateTime.now());
+//        employee.setUpdateTime(LocalDateTime.now());
+//        //设置当前记录创建人id和修改人id
+//        //TODO 后期完善，目前先设置为10L
+//        //从ThreadLocal线程当中提取出之前存进去的empid
+//        employee.setCreateUser(BaseContext.getCurrentId());
+//        employee.setUpdateUser(BaseContext.getCurrentId());
 
         //调用持久层，对数据库进行插入
         employeeMapper.insert(employee);
@@ -137,6 +137,42 @@ public class EmployeeServiceImpl implements EmployeeService {
                 .id(id)
                 .build();
 
+        employeeMapper.update(employee);
+    }
+
+    /**
+     * 根据id查询员工信息
+     *
+     * @param id
+     * @return
+     */
+    public Employee getById(Long id) {
+        //通过id查询员工信息
+        Employee employee = employeeMapper.getById(id);
+        //设置密码为******，不返回密码,应为密码经过加密
+        employee.setPassword("******");
+        //返回employee对象
+        return employee;
+    }
+
+    /**
+     * 编辑员工信息
+     *
+     * @param employeeDTO
+     * @return
+     */
+    public void update(EmployeeDTO employeeDTO) {
+        //利用在xml映射文件中创建的update方法，去进行编辑员工信息
+        //但是需要把DTO对象转换为Employee对象才能够使用
+        Employee employee = new Employee();
+        //通过BeanUtils工具类进行对象属性拷贝，前者为源对象，后者为目标对象
+        BeanUtils.copyProperties(employeeDTO, employee);
+
+//        //设置修改时间，修改人id，这两个属性在DTO中没有，所以需要手动设置
+//        employee.setUpdateTime(LocalDateTime.now());
+//        //通过BaseContext工具类，底层为ThreadLocal 获取当前修改的用户的id
+//        employee.setUpdateUser(BaseContext.getCurrentId());
+        //调用持久层的update方法
         employeeMapper.update(employee);
     }
 

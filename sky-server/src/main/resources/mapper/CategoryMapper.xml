@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.sky.mapper.CategoryMapper">
+    <select id="pageQuery" resultType="com.sky.entity.Category">
+        SELECT * FROM category
+        <where>
+            <if test="name != null and name != ''">
+                #动态查询如果 where 中的第一个条件以 and 开头，MyBatis 会自动去掉多余的 and，确保生成的 SQL 语句是合法的。
+                and name like concat('%', #{name}, '%')
+            </if>
+            <if test="type != null">
+                and type = #{type}
+            </if>
+            </where>
+        # 先根据顺序升序，再按照创建时间降序排序
+        order by sort asc , create_time desc
+    </select>
+    <update id="update" parameterType="Category">
+        update category
+        <set>
+            <if test="type != null">
+                type = #{type},
+            </if>
+            <if test="name != null">
+                name = #{name},
+            </if>
+            <if test="sort != null">
+                sort = #{sort},
+            </if>
+            <if test="status != null">
+                status = #{status},
+            </if>
+            <if test="updateTime != null">
+                update_time = #{updateTime},
+            </if>
+            <if test="updateUser != null">
+                update_user = #{updateUser}
+            </if>
+        </set>
+        where id = #{id}
+    </update>
+    <select id="list" resultType="Category">
+        select * from category
+        where status = 1
+        <if test="type != null">
+            and type = #{type}
+        </if>
+        order by sort asc ,create_time desc
+    </select>
+</mapper>
